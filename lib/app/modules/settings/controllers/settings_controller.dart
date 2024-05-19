@@ -1,23 +1,14 @@
 import 'package:get/get.dart';
 
+import '../../../../config/theme/my_theme.dart';
+import '../../../data/local/my_shared_preferences.dart';
+
 class SettingsController extends GetxController {
-  //TODO: Implement SettingsController
+  var isLightTheme = MySharedPref.getThemeIsLight();
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  changeTheme(bool value) {
+    MyTheme.changeTheme();
+    isLightTheme = MySharedPref.getThemeIsLight();
+    update(['Theme']);
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }
