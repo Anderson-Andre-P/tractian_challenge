@@ -58,10 +58,8 @@ class MyTheme {
 
   static void changeTheme() {
     bool isLightTheme = MySharedPref.getThemeIsLight();
-    print("Current theme before change: $isLightTheme");
     MySharedPref.setThemeIsLight(!isLightTheme);
     Get.changeThemeMode(!isLightTheme ? ThemeMode.light : ThemeMode.dark);
-    print("Theme changed to: ${!isLightTheme ? 'light' : 'dark'}");
   }
 
   bool get getThemeIsLight => MySharedPref.getThemeIsLight();
