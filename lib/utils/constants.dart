@@ -1,9 +1,14 @@
 class Constants {
-  // API
+  // Base URL
   static const baseUrl = 'https://fake-api.tractian.com/';
-  static const companiesApiUrl = '$baseUrl/companies';
-  static const locationsApiUrl = '$baseUrl/companies';
-  static const assetsApiUrl = '$baseUrl/companies';
+
+  // Endpoints
+  static String companiesApiUrl() => '${baseUrl}companies';
+  static String locationsApiUrl(String companyId) =>
+      '${baseUrl}companies/$companyId/locations';
+  static String assetsApiUrl(String companyId) =>
+      '${baseUrl}companies/$companyId/assets';
+
   // Images
   static const logo = 'assets/images/app_icon.png';
   static const noData = 'assets/images/no_data.png';
