@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:tractian_challenge/app/components/custom_app_bar.dart';
 
 import '../../../components/api_error_widget.dart';
 import '../../../components/my_widget_animator.dart';
@@ -13,9 +14,9 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('HomeView'),
-        centerTitle: true,
+      appBar: const CustomAppBar(
+        title: "Tractian",
+        hasDrawer: false,
       ),
       body: GetBuilder<HomeController>(builder: (_) {
         return MyWidgetsAnimator(
