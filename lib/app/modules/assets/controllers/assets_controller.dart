@@ -9,7 +9,8 @@ class AssetsController extends GetxController {
 
   AssetsController(this.companyId);
 
-  var assets = <Assets>[].obs; // Alteração de RxList para List
+  var assets = <Assets>[].obs;
+  var locations = <Locations>[].obs;
 
   @override
   void onInit() {
@@ -18,6 +19,10 @@ class AssetsController extends GetxController {
   }
 
   Future<void> fetchData() async {
+    await Future.wait([fetchAssets(), fetchLocations()]);
+  }
+
+  Future<void> fetchAssets() async {
     try {
       final response =
           await http.get(Uri.parse(Constants.assetsApiUrl(companyId)));
@@ -32,6 +37,25 @@ class AssetsController extends GetxController {
       }
     } catch (e) {
       print('Error loading assets: $e');
+    }
+  }
+
+  Future<void> fetchLocations() async {
+    try {
+      final response =
+          await http.get(Uri.parse(Constants.locationsApiUrl(companyId)));
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData =
+            json.decode(response.body) as List<dynamic>;
+        if (responseData.isNotEmpty) {
+          locations.value =
+              responseData.map((e) => Locations.fromJson(e)).toList();
+        }
+      } else {
+        print('Failed to load locations: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error loading locations: $e');
     }
   }
 }
@@ -67,6 +91,22 @@ class Assets {
       sensorId: json['sensorId'],
       sensorType: json['sensorType'],
       status: json['status'],
+    );
+  }
+}
+
+class Locations {
+  String? id;
+  String? name;
+  String? parentId;
+
+  Locations({this.id, this.name, this.parentId});
+
+  factory Locations.fromJson(Map<String, dynamic> json) {
+    return Locations(
+      id: json['id'],
+      name: json['name'],
+      parentId: json['parentId'],
     );
   }
 }
