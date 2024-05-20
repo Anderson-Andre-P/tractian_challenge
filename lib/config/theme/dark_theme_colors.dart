@@ -5,7 +5,7 @@ class DarkThemeColors {
   static const Color primaryColor = Color(0xFF2188FF);
 
   // SECONDARY COLOR
-  static const Color accentColor = Color(0xFF17192D);
+  static const Color accentColor = Color(0xFFFFFFFF);
 
   //Appbar
   static const Color appbarColor = Colors.black;
