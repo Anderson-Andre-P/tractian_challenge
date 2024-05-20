@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:tractian_challenge/utils/constants.dart';
 
+import '../models/assets_model.dart';
+import '../models/locations_model.dart';
+
 class AssetsController extends GetxController {
   final String companyId;
 
@@ -11,6 +14,63 @@ class AssetsController extends GetxController {
 
   var assets = <Assets>[].obs;
   var locations = <Locations>[].obs;
+  var searchQuery = ''.obs;
+  var isAlertSelected = false.obs;
+  var isSensorTypeSelected = false.obs;
+
+  List<Assets> get filteredAssets {
+    return assets.where((asset) {
+      final matchesQuery =
+          asset.name?.toLowerCase().contains(searchQuery.value.toLowerCase()) ??
+              true;
+      final matchesAlert = isAlertSelected.value
+          ? asset.status == 'alert' || asset.status == null
+          : true;
+      final matchesSensorType =
+          isSensorTypeSelected.value ? asset.sensorType == 'energy' : true;
+
+      return matchesQuery && matchesAlert && matchesSensorType;
+    }).toList();
+  }
+
+  List<Locations> get filteredLocations {
+    return locations.where((location) {
+      return _locationMatches(location, filteredAssets);
+    }).toList();
+  }
+
+  bool _locationMatches(Locations location, List<Assets> filteredAssetsList) {
+    final matchesQuery = location.name
+            ?.toLowerCase()
+            .contains(searchQuery.value.toLowerCase()) ??
+        true;
+
+    if (matchesQuery) {
+      bool hasMatchingAssets =
+          filteredAssetsList.any((asset) => asset.locationId == location.id);
+
+      bool hasMatchingSubLocations = locations.any((subLocation) {
+        return subLocation.parentId == location.id &&
+            _locationMatches(subLocation, filteredAssetsList);
+      });
+
+      return hasMatchingAssets || hasMatchingSubLocations;
+    }
+
+    return false;
+  }
+
+  void updateSearchQuery(String query) {
+    searchQuery.value = query;
+  }
+
+  void updateFilter(String filter, bool selected) {
+    if (filter == 'status') {
+      isAlertSelected.value = selected;
+    } else if (filter == 'sensorType') {
+      isSensorTypeSelected.value = selected;
+    }
+  }
 
   @override
   void onInit() {
@@ -27,16 +87,17 @@ class AssetsController extends GetxController {
       final response =
           await http.get(Uri.parse(Constants.assetsApiUrl(companyId)));
       if (response.statusCode == 200) {
-        final List<dynamic> responseData =
-            json.decode(response.body) as List<dynamic>;
+        final List<dynamic> responseData = json.decode(response.body);
         if (responseData.isNotEmpty) {
-          assets.value = responseData.map((e) => Assets.fromJson(e)).toList();
+          final List<Assets> fetchedAssets =
+              responseData.map((e) => Assets.fromJson(e)).toList();
+          assets.value = fetchedAssets;
         }
       } else {
-        print('Failed to load assets: ${response.statusCode}');
+        // print('Failed to load assets: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error loading assets: $e');
+      //   print('Error loading assets: $e');
     }
   }
 
@@ -45,68 +106,17 @@ class AssetsController extends GetxController {
       final response =
           await http.get(Uri.parse(Constants.locationsApiUrl(companyId)));
       if (response.statusCode == 200) {
-        final List<dynamic> responseData =
-            json.decode(response.body) as List<dynamic>;
+        final List<dynamic> responseData = json.decode(response.body);
         if (responseData.isNotEmpty) {
-          locations.value =
+          final List<Locations> fetchedLocations =
               responseData.map((e) => Locations.fromJson(e)).toList();
+          locations.value = fetchedLocations;
         }
       } else {
-        print('Failed to load locations: ${response.statusCode}');
+        // print('Failed to load locations: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error loading locations: $e');
+      //   print('Error loading locations: $e');
     }
-  }
-}
-
-class Assets {
-  String? gatewayId;
-  String? id;
-  String? locationId;
-  String? name;
-  String? parentId;
-  String? sensorId;
-  String? sensorType;
-  String? status;
-
-  Assets({
-    this.gatewayId,
-    this.id,
-    this.locationId,
-    this.name,
-    this.parentId,
-    this.sensorId,
-    this.sensorType,
-    this.status,
-  });
-
-  factory Assets.fromJson(Map<String, dynamic> json) {
-    return Assets(
-      gatewayId: json['gatewayId'],
-      id: json['id'],
-      locationId: json['locationId'],
-      name: json['name'],
-      parentId: json['parentId'],
-      sensorId: json['sensorId'],
-      sensorType: json['sensorType'],
-      status: json['status'],
-    );
-  }
-}
-
-class Locations {
-  String? id;
-  String? name;
-  String? parentId;
-
-  Locations({this.id, this.name, this.parentId});
-
-  factory Locations.fromJson(Map<String, dynamic> json) {
-    return Locations(
-      id: json['id'],
-      name: json['name'],
-      parentId: json['parentId'],
-    );
   }
 }

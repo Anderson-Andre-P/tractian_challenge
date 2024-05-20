@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:tractian_challenge/utils/constants.dart';
 
+import '../../../../utils/constants.dart';
 import '../../../components/custom_image_view.dart';
 import '../controllers/assets_controller.dart';
+import '../models/assets_model.dart';
+import '../models/locations_model.dart';
 
 class AssetsView extends StatelessWidget {
   const AssetsView({super.key});
@@ -18,16 +20,60 @@ class AssetsView extends StatelessWidget {
         title: const Text('Assets View'),
         centerTitle: true,
       ),
-      body: Obx(() {
-        if (controller.assets.isEmpty || controller.locations.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          return TreeView(
-            assets: controller.assets,
-            locations: controller.locations,
-          );
-        }
-      }),
+      body: Obx(
+        () {
+          if (controller.assets.isEmpty || controller.locations.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    onChanged: controller.updateSearchQuery,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      prefixIcon: const Icon(Icons.search),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Wrap(
+                    spacing: 8.0,
+                    children: [
+                      FilterChip(
+                        label: const Text('Crítico'),
+                        selected: controller.isAlertSelected.value,
+                        onSelected: (bool selected) {
+                          controller.updateFilter('status', selected);
+                        },
+                      ),
+                      FilterChip(
+                        label: const Text('Sensor de Energia'),
+                        selected: controller.isSensorTypeSelected.value,
+                        onSelected: (bool selected) {
+                          controller.updateFilter('sensorType', selected);
+                        },
+                      ),
+                      // Adicione mais chips de filtro conforme necessário
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TreeView(
+                    assets: controller.filteredAssets,
+                    locations: controller.filteredLocations,
+                  ),
+                ),
+              ],
+            );
+          }
+        },
+      ),
     );
   }
 }
