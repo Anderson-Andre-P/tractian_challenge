@@ -13,4 +13,6 @@ class Constants {
   static const logo = 'assets/images/app_icon.png';
   static const noData = 'assets/images/no_data.png';
   static const box = 'assets/images/icon.svg';
+  static const ioCubeOutline = 'assets/images/IoCubeOutline.svg';
+  static const codepen = 'assets/images/Codepen.png';
 }
