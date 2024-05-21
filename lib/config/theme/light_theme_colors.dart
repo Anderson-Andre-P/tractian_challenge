@@ -6,9 +6,10 @@ class LightThemeColors {
 
   // SECONDARY COLOR
   static const Color accentColor = Color(0xFF17192D);
+  static const Color appBarColor = Color(0xFF17192D);
 
   //APPBAR
-  static const Color appBarColor = primaryColor;
+//   static const Color appBarColor = primaryColor;
 
   //SCAFFOLD
   static const Color scaffoldBackgroundColor = Colors.white;
