@@ -14,10 +14,10 @@ class SettingsView extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SettingsController());
-    final theme = context.theme;
+    // final theme = context.theme;
     return Scaffold(
       appBar: CustomAppBar(
-        title: Strings.serverError.tr,
+        title: Strings.settings.tr,
         hasDrawer: false,
       ),
       body: Padding(
@@ -26,11 +26,11 @@ class SettingsView extends GetView<SettingsController> {
           child: Column(
             children: [
               SettingsList(
-                titleOfList: Strings.serverError.tr,
+                titleOfList: Strings.customizations.tr,
                 items: [
                   SettingsItem(
                     icon: Icons.translate_outlined,
-                    phrase: Strings.serverError.tr,
+                    phrase: Strings.translate.tr,
                     arrowIcon: Icons.arrow_forward_outlined,
                     onPressed: () {
                       LocalizationService.updateLanguage(
@@ -43,7 +43,7 @@ class SettingsView extends GetView<SettingsController> {
                   ),
                   SettingsItem(
                     icon: Icons.swap_horiz_outlined,
-                    phrase: Strings.serverError.tr,
+                    phrase: Strings.changeTheme.tr,
                     arrowIcon: Icons.arrow_forward,
                     isToggle: true,
                     onToggle: (value) {

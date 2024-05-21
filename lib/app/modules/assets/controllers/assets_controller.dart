@@ -19,10 +19,11 @@ class AssetsController extends GetxController {
   var isSensorTypeSelected = false.obs;
 
   List<Assets> get filteredAssets {
+    final query = searchQuery.value.toLowerCase();
+
     return assets.where((asset) {
-      final matchesQuery =
-          asset.name?.toLowerCase().contains(searchQuery.value.toLowerCase()) ??
-              true;
+      final assetName = asset.name?.toLowerCase() ?? '';
+      final matchesQuery = assetName.contains(query);
       final matchesAlert = isAlertSelected.value
           ? asset.status == 'alert' || asset.status == null
           : true;
@@ -39,11 +40,39 @@ class AssetsController extends GetxController {
     }).toList();
   }
 
+//   bool _locationMatches(Locations location) {
+//     final query = searchQuery.value.toLowerCase();
+//     final locationName = location.name?.toLowerCase() ?? '';
+//     final matchesQuery = locationName.contains(query);
+
+//     // Verifica se o nome da localização corresponde à consulta de pesquisa
+//     if (matchesQuery) {
+//       return true;
+//     }
+
+//     // Verifica se algum ativo na localização corresponde à consulta e aos filtros
+//     final hasMatchingAssets =
+//         filteredAssets.any((asset) => asset.locationId == location.id);
+
+//     if (hasMatchingAssets) {
+//       return true;
+//     }
+
+//     // Verifica se alguma sublocalização corresponde à consulta e aos filtros
+//     final hasMatchingSubLocations = locations.any((subLocation) =>
+//         subLocation.parentId == location.id && _locationMatches(subLocation));
+
+//     return hasMatchingSubLocations;
+//   }
+
   bool _locationMatches(Locations location, List<Assets> filteredAssetsList) {
-    final matchesQuery = location.name
-            ?.toLowerCase()
-            .contains(searchQuery.value.toLowerCase()) ??
-        true;
+    final query = searchQuery.value.toLowerCase();
+    final locationName = location.name?.toLowerCase() ?? '';
+    final matchesQuery = locationName.contains(query);
+    // final matchesQuery = location.name
+    //         ?.toLowerCase()
+    //         .contains(searchQuery.value.toLowerCase()) ??
+    //     true;
 
     if (matchesQuery) {
       bool hasMatchingAssets =
@@ -111,12 +140,15 @@ class AssetsController extends GetxController {
           final List<Locations> fetchedLocations =
               responseData.map((e) => Locations.fromJson(e)).toList();
           locations.value = fetchedLocations;
+
+          // Após atualizar os locais, atualize também os ativos
+          await fetchAssets();
         }
       } else {
-        // print('Failed to load locations: ${response.statusCode}');
+        print('Failed to load locations: ${response.statusCode}');
       }
     } catch (e) {
-      //   print('Error loading locations: $e');
+      print('Error loading locations: $e');
     }
   }
 }

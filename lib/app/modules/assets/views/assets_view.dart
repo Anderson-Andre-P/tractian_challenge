@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:tractian_challenge/app/components/custom_app_bar.dart';
 
+import '../../../../config/translations/strings_enum.dart';
 import '../../../../utils/constants.dart';
 import '../../../components/custom_image_view.dart';
 import '../controllers/assets_controller.dart';
@@ -15,10 +17,10 @@ class AssetsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final AssetsController controller = Get.find<AssetsController>();
 
+    final theme = context.theme;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Assets View'),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: Strings.assets.tr,
       ),
       body: Obx(
         () {
@@ -30,11 +32,22 @@ class AssetsView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    style: const TextStyle(
+                        //   decorationColor: Colors.blue,
+
+                        ),
                     onChanged: controller.updateSearchQuery,
                     decoration: InputDecoration(
-                      hintText: 'Search...',
+                      hintText: Strings.search.tr,
+                      fillColor: theme.cardColor,
+                      filled: true,
+                      isDense: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.all(Radius.circular(4.r)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: theme.dividerColor),
+                        borderRadius: BorderRadius.all(Radius.circular(4.r)),
                       ),
                       prefixIcon: const Icon(Icons.search),
                     ),
@@ -45,21 +58,33 @@ class AssetsView extends StatelessWidget {
                   child: Wrap(
                     spacing: 8.0,
                     children: [
-                      FilterChip(
-                        label: const Text('Crítico'),
-                        selected: controller.isAlertSelected.value,
-                        onSelected: (bool selected) {
-                          controller.updateFilter('status', selected);
-                        },
-                      ),
-                      FilterChip(
-                        label: const Text('Sensor de Energia'),
+                      CustomFilterChip(
+                        controller: controller,
+                        theme: theme,
+                        label: Strings.energySensor.tr,
+                        icon: Icons.bolt_outlined,
                         selected: controller.isSensorTypeSelected.value,
                         onSelected: (bool selected) {
                           controller.updateFilter('sensorType', selected);
                         },
                       ),
-                      // Adicione mais chips de filtro conforme necessário
+                      CustomFilterChip(
+                        controller: controller,
+                        theme: theme,
+                        label: Strings.alert.tr,
+                        icon: Icons.info_outline,
+                        selected: controller.isAlertSelected.value,
+                        onSelected: (bool selected) {
+                          controller.updateFilter('status', selected);
+                        },
+                      ),
+                      //   FilterChip(
+                      //     label: const Text('Sensor de Energia'),
+                      //     selected: controller.isSensorTypeSelected.value,
+                      //     onSelected: (bool selected) {
+                      //       controller.updateFilter('sensorType', selected);
+                      //     },
+                      //   ),
                     ],
                   ),
                 ),
@@ -74,6 +99,53 @@ class AssetsView extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+}
+
+class CustomFilterChip extends StatelessWidget {
+  const CustomFilterChip({
+    super.key,
+    required this.controller,
+    required this.label,
+    required this.theme,
+    required this.icon,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final AssetsController controller;
+  final ThemeData theme;
+  final String label;
+  final bool selected;
+  final IconData icon;
+  final void Function(bool) onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.r),
+        side: BorderSide(
+          color: Theme.of(context).dividerColor,
+        ),
+      ),
+      avatar: Icon(icon),
+      label: Text(
+        label,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w700,
+              color: selected
+                  ? Colors.white
+                  : (Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.grey),
+            ),
+      ),
+      selected: selected,
+      onSelected: onSelected,
+      backgroundColor: theme.scaffoldBackgroundColor,
     );
   }
 }
