@@ -27,12 +27,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSize {
         title,
         style: theme.textTheme.displayMedium?.copyWith(
           fontSize: 23.sp,
-          fontWeight: FontWeight.normal,
+          fontWeight: FontWeight.w900,
+          color: Colors.white,
         ),
       ),
       leading: hasDrawer
           ? IconButton(
-              icon: const Icon(Icons.arrow_back_outlined),
+              icon: const Icon(Icons.arrow_back_ios),
               color: theme.iconTheme.color,
               onPressed: () {
                 Navigator.of(context).pop();
@@ -40,7 +41,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSize {
             )
           : null,
       centerTitle: true,
-      backgroundColor: theme.primaryColor,
+      backgroundColor: const Color(0xFF17192D),
       actions: _buildActionIcons(),
     );
   }
